@@ -1,121 +1,117 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-// In-memory storage for books
-let books = [];
-let nextId = 1; // Auto-increment counter
+// In-memory data store
+let books = [
+  { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' },
+  { id: 2, title: '1984', author: 'George Orwell' },
+  { id: 3, title: 'To Kill a Mockingbird', author: 'Harper Lee' }
+];
+
+let nextId = 4;
 
 // GET /books - Return all books
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   res.json({
-    message: "Books retrieved successfully",
-    count: books.length,
-    data: books,
+    message: 'Books retrieved successfully',
+    data: books
   });
 });
 
 // POST /books - Add a new book
-router.post("/", (req, res) => {
+router.post('/', (req, res) => {
   const { title, author } = req.body;
 
-  // Validate required fields
   if (!title || !author) {
     return res.status(400).json({
-      message: "Title and author are required",
+      message: 'Title and author are required',
+      data: null
     });
   }
 
   const newBook = {
     id: nextId++,
     title,
-    author,
+    author
   };
 
   books.push(newBook);
 
   res.status(201).json({
-    message: "Book added successfully",
-    data: newBook,
+    message: 'Book created successfully',
+    data: newBook
   });
 });
 
-// PUT /books/:id - Full update of a book
-router.put("/:id", (req, res) => {
+// PUT /books/:id - Update entire book
+router.put('/:id', (req, res) => {
   const id = parseInt(req.params.id);
+  const bookIndex = books.findIndex(b => b.id === id);
+
+  if (bookIndex === -1) {
+    return res.status(404).json({
+      message: 'Book not found',
+      data: null
+    });
+  }
+
   const { title, author } = req.body;
 
-  // Validate required fields
   if (!title || !author) {
     return res.status(400).json({
-      message: "Title and author are required",
+      message: 'Title and author are required',
+      data: null
     });
   }
 
-  // Find book index
-  const bookIndex = books.findIndex((book) => book.id === id);
-
-  if (bookIndex === -1) {
-    return res.status(404).json({
-      message: "Book not found",
-    });
-  }
-
-  // Replace entire book
-  const updatedBook = {
-    id,
-    title,
-    author,
-  };
-
-  books[bookIndex] = updatedBook;
+  books[bookIndex] = { id, title, author };
 
   res.json({
-    message: "Book updated successfully",
-    data: updatedBook,
+    message: 'Book updated successfully',
+    data: books[bookIndex]
   });
 });
 
-// PATCH /books/:id - Partial update of a book
-router.patch("/:id", (req, res) => {
+// PATCH /books/:id - Partially update book
+router.patch('/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const updates = req.body;
-
-  // Find book index
-  const bookIndex = books.findIndex((book) => book.id === id);
+  const bookIndex = books.findIndex(b => b.id === id);
 
   if (bookIndex === -1) {
     return res.status(404).json({
-      message: "Book not found",
+      message: 'Book not found',
+      data: null
     });
   }
 
-  // Merge existing book with updates (only provided fields)
-  books[bookIndex] = { ...books[bookIndex], ...updates };
+  const { title, author } = req.body;
+
+  if (title) books[bookIndex].title = title;
+  if (author) books[bookIndex].author = author;
 
   res.json({
-    message: "Book partially updated successfully",
-    data: books[bookIndex],
+    message: 'Book updated successfully',
+    data: books[bookIndex]
   });
 });
 
 // DELETE /books/:id - Delete a book
-router.delete("/:id", (req, res) => {
+router.delete('/:id', (req, res) => {
   const id = parseInt(req.params.id);
-
-  // Find book index
-  const bookIndex = books.findIndex((book) => book.id === id);
+  const bookIndex = books.findIndex(b => b.id === id);
 
   if (bookIndex === -1) {
     return res.status(404).json({
-      message: "Book not found",
+      message: 'Book not found',
+      data: null
     });
   }
 
-  // Remove book
-  books.splice(bookIndex, 1);
+  const deletedBook = books.splice(bookIndex, 1);
 
   res.json({
-    message: "Book deleted successfully",
+    message: 'Book deleted successfully',
+    data: deletedBook[0]
   });
 });
 
