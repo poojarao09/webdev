@@ -1,6 +1,6 @@
 # BeautiCare - Responsive Web Design
 
-![BeautiCare Preview](./images/hero.png) *(Note: Replace with your actual preview screenshot if desired)*
+![BeautiCare Preview](./images/webpage.png) *(Note: Replace with your actual preview screenshot if desired)*
 
 Welcome to the **BeautiCare** landing page! This is a beautifully crafted, single-page responsive website designed for a modern luxury spa and skincare clinic.
 
